@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Level Assessor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #6EE7B7, #3B82F6);
+        }
+        .result-hidden {
+            display: none;
+        }
+        .result-visible {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg text-gray-800 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full">
+        <h1 class="text-3xl font-bold text-center text-indigo-600 mb-4">Mental Health Assessor</h1>
+        <p class="text-sm text-gray-600 mb-4"><strong>Disclaimer:</strong> This tool is for illustrative purposes only and not a substitute for professional medical advice. Always consult a qualified healthcare provider for mental health concerns.</p>
+        <p class="text-sm text-gray-600 mb-4">Answer the following 5 questions based on the past 2 weeks. Scale: <br><strong>0:</strong> Not at all, <strong>1:</strong> Several days, <strong>2:</strong> More than half the days, <strong>3:</strong> Nearly every day.</p>
+        <p class="text-sm text-gray-600 mb-6">Results are categorized into three levels: <br>
+            <span class="text-green-600">Good (0-5):</span> Low distress. <br>
+            <span class="text-yellow-600">Moderate (6-10):</span> Some concerns. <br>
+            <span class="text-red-600">Severe (11-15):</span> Seek professional help.
+        </p>
+
+        <form id="assessmentForm" class="space-y-4">
+            <div class="fade-in">
+                <label for="q1" class="block text-sm font-medium text-gray-700">1. Felt little interest or pleasure in doing things?</label>
+                <select id="q1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="fade-in">
+                <label for="q2" class="block text-sm font-medium text-gray-700">2. Felt down, depressed, or hopeless?</label>
+                <select id="q2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="fade-in">
+                <label for="q3" class="block text-sm font-medium text-gray-700">3. Felt nervous, anxious, or on edge?</label>
+                <select id="q3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="fade-in">
+                <label for="q4" class="block text-sm font-medium text-gray-700">4. Had trouble sleeping or sleeping too much?</label>
+                <select id="q4" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="fade-in">
+                <label for="q5" class="block text-sm font-medium text-gray-700">5. Felt tired or had little energy?</label>
+                <select id="q5" class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <button type="button" onclick="calculateScore()" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300 pulse-animation">Submit</button>
+        </form>
+
+        <div id="result" class="result-hidden mt-6 p-4 rounded-md">
+            <h2 class="text-lg font-semibold text-gray-800">Your Mental Health Level:</h2>
+            <p id="level" class="text-xl font-bold"></p>
+            <p id="reason" class="text-sm mt-2"></p>
+            <p id="score" class="text-sm mt-2"></p>
+            <div id="actionButton" class="mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateScore() {
+            const q1 = parseInt(document.getElementById('q1').value);
+            const q2 = parseInt(document.getElementById('q2').value);
+            const q3 = parseInt(document.getElementById('q3').value);
+            const q4 = parseInt(document.getElementById('q4').value);
+            const q5 = parseInt(document.getElementById('q5').value);
+
+            const totalScore = q1 + q2 + q3 + q4 + q5;
+
+            let level = '';
+            let reason = '';
+            let className = '';
+            let actionButton = '';
+
+            if (totalScore <= 5) {
+                level = 'Good';
+                reason = 'Your score suggests low levels of mental health concerns. You seem to be managing well with minimal symptoms of distress. Keep up healthy habits like regular exercise, social connections, and stress management techniques. You may consult with Doctor AI for personalized tips.';
+                className = 'bg-green-100 text-green-800';
+                actionButton = '<a href="https://example.com/doctor-ai" class="inline-block bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300 pulse-animation">Consult Doctor AI</a>';
+            } else if (totalScore <= 10) {
+                level = 'Moderate';
+                reason = 'Your score indicates moderate mental health concerns. You may be experiencing symptoms that occasionally affect your daily life. Consider monitoring your feelings and exploring support options, such as talking to a trusted friend or trying mindfulness practices. You may consult with our online expert for guidance.';
+                className = 'bg-yellow-100 text-yellow-800';
+                actionButton = '<a href="https://example.com/online-expert" class="inline-block bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 transition duration-300 pulse-animation">Consult Online Expert</a>';
+            } else {
+                level = 'Severe';
+                reason = 'Your score suggests significant mental health concerns, which may indicate a higher level of distress. It’s strongly recommended to seek support from a mental health professional, hotline, or trusted advisor for a thorough assessment and guidance. Visit our offline centre for comprehensive support.';
+                className = 'bg-red-100 text-red-800';
+                actionButton = '<a href="https://example.com/offline-centre" class="inline-block bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-300 pulse-animation">Visit Offline Centre</a>';
+            }
+
+            document.getElementById('level').textContent = level;
+            document.getElementById('reason').textContent = reason;
+            document.getElementById('score').textContent = `Total Score: ${totalScore}/15`;
+            document.getElementById('actionButton').innerHTML = actionButton;
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `mt-6 p-4 rounded-md ${className} result-visible`;
+        }
+    </script>
+</body>
+</html>
